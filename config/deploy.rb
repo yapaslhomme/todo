@@ -10,11 +10,11 @@ require 'mina/git'
 #   repository   - Git repo to clone from. (needed by mina/git)
 #   branch       - Branch name to deploy. (needed by mina/git)
 
-set :user, 'deploy'
-set :domain, 'ec2-54-171-9-154.eu-west-1.compute.amazonaws.com'
-set :deploy_to, '/var/www/foobar.com'
-#set :repository, 'git://...'
-#set :branch, 'master'
+set :user, 'user'
+set :domain, '178.62.225.217'
+set :deploy_to, '/var/www/yaw'
+set :repository, 'git@github.com:yapaslhomme/todo.git'
+set :branch, 'master'
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
@@ -54,18 +54,29 @@ task :deploy => :environment do
   deploy do
     # Put things that will set up an empty directory into a fully set-up
     # instance of your project.
-    #invoke :'git:clone'
+    invoke :'git:clone'
     invoke :'deploy:link_shared_paths'
     invoke :'bundle:install'
-    invoke :'rails:db_migrate'
-    invoke :'rails:assets_precompile'
+    #invoke :'rails:db_migrate'
+    #invoke :'rails:assets_precompile'
 
     to :launch do
-      queue "bundle exec unicorn -c config/unicorn/production.rb -E production - D"
 
-      #queue "touch #{deploy_to}/tmp/restart.txt"
+      queue "touch #{deploy_to}/tmp/restart.txt"
     end
   end
+end
+task :down do
+  invoke :restart
+  invoke :logs
+end
+
+task :restart do
+  queue 'sudo service nginx restart'
+end
+
+task :logs do
+      queue 'tail -f /var/log/nginx/error.log'
 end
 
 # For help in making your deploy script, see the Mina documentation:
