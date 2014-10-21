@@ -2,7 +2,7 @@ require 'mina/bundler'
 require 'mina/rails'
 require 'mina/git'
 # require 'mina/rbenv'  # for rbenv support. (http://rbenv.org)
-# require 'mina/rvm'    # for rvm support. (http://rvm.io)
+ require 'mina/rvm'    # for rvm support. (http://rvm.io)
 
 # Basic settings:
 #   domain       - The hostname to SSH to.
@@ -15,6 +15,9 @@ set :domain, '178.62.225.217'
 set :deploy_to, '/var/www/yaw'
 set :repository, 'git@github.com:yapaslhomme/todo.git'
 set :branch, 'master'
+set :rvm_path, '/etc/profile.d/rvm.sh'
+set :rvm_gemset, 'ruby-2.1.2-p95@default'
+set :term_mode, nil # needed to solve a login problem
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
@@ -32,7 +35,7 @@ task :environment do
   # invoke :'rbenv:load'
 
   # For those using RVM, use this to load an RVM version@gemset.
-  # invoke :'rvm:use[ruby-1.9.3-p125@default]'
+   #invoke :'rvm:use[ruby-2.1.2-p95@default]'
 end
 
 # Put any custom mkdir's in here for when `mina setup` is ran.
@@ -50,22 +53,9 @@ task :setup => :environment do
 end
 
 desc "Deploys the current version to the server."
-task :deploy => :environment do
-  deploy do
-    # Put things that will set up an empty directory into a fully set-up
-    # instance of your project.
-    invoke :'git:clone'
-    invoke :'deploy:link_shared_paths'
-    invoke :'bundle:install'
-    #invoke :'rails:db_migrate'
-    #invoke :'rails:assets_precompile'
 
-    to :launch do
 
-      queue "touch #{deploy_to}/tmp/restart.txt"
-    end
-  end
-end
+
 task :down do
   invoke :restart
   invoke :logs
@@ -78,6 +68,25 @@ end
 task :logs do
       queue 'tail -f /var/log/nginx/error.log'
 end
+
+
+task :deploy => :environment do
+  deploy do
+    # Put things that will set up an empty directory into a fully set-up
+    # instance of your project.
+    invoke :'git:clone'
+    invoke :'deploy:link_shared_paths'
+    #invoke :'bundle:install' 
+    #invoke :'rails:db_migrate'
+    #invoke :'rails:assets_precompile'
+
+    to :launch do
+
+      queue "touch #{deploy_to}/tmp/restart.txt"
+    end
+  end
+end
+
 
 # For help in making your deploy script, see the Mina documentation:
 #
