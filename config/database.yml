@@ -80,7 +80,7 @@ test:
 #
 production:
   <<: *default
-  database: <%= ENV['YOUR_RAILS_DB_NAME'] %>
-  username: <%= ENV ['YOUR_ROLE_NAME'] %>
-  password: <%= ENV['YOUR_ROLE_PASSWORD'] %>
-
+  database: your_rails_db
+  username: deploy
+  password: role_password
+   
