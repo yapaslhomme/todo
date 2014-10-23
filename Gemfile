@@ -28,7 +28,6 @@ gem 'spring',        group: :development
 
 
 gem 'capistrano'
-
 gem 'capistrano-bundler', '~> 1.1.2'
 gem 'capistrano-rails', '~> 1.1.1'
 
